@@ -1,0 +1,19 @@
+
+# local configs
+.env
+
+# pycharm
+.idea
+
+# IOS
+.DS_Store
+
+# Visual studio
+.vscode
+
+# Traefik:
+conf/acme.json
+conf/.htpasswd-users
+
+# Volumes
+traefik-logs/

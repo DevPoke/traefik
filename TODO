@@ -1,0 +1,2 @@
+- resolve security issue: https://doc.traefik.io/traefik/providers/docker/#docker-api-access
+- configure traefik headers
