@@ -2,7 +2,7 @@ version: "3.7"
 services:
   traefik:
     container_name: traefik
-    image: traefik:v2.5.4
+    image: traefik:v2.6.1
     restart: always
     ports:
       - 80:80
@@ -10,8 +10,8 @@ services:
     networks:
       - web
     volumes:
-      - /traefik-logs:/logs # <== Volume for logs
-      - /traefik-conf:/etc/traefik # <== Volume for certs (TLS)
+      - traefik-logs:/logs # <== Volume for logs
+      - traefik-conf:/etc/traefik # <== Volume for certs (TLS)
       - /var/run/docker.sock:/var/run/docker.sock:ro # <== Volume for docker admin
     labels:
       #### Labels define the behavior and rules of the traefik proxy for this container ####
@@ -33,7 +33,7 @@ services:
       traefik.http.routers.traefik.middlewares: auth
       # generate using: htpasswd -cbB traefik-conf/.htpasswd-users <username> <password>
       traefik.http.middlewares.auth.basicauth.usersfile: /etc/traefik/.htpasswd-users
-      traefik.http.services.traefik-${ENV}.loadbalancer.server.port: 8080
+      traefik.http.services.traefik.loadbalancer.server.port: 8080
 
 networks:
   web:
