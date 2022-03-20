@@ -1,0 +1,35 @@
+[providers]
+  [providers.file]
+      directory = "/etc/traefik/sites-enabled"
+          watch = true
+
+  [providers.docker]
+    exposedByDefault = false
+    network = "web"
+    # TODO resolve security issue: https://doc.traefik.io/traefik/providers/docker/#docker-api-access
+    endpoint = "unix:///var/run/docker.sock"
+
+[api]
+  dashboard = true
+
+[log]
+  filePath = "/logs/traefik.log"
+  level = "INFO"
+
+[accessLog]
+  filePath = "/logs/access.log"
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+
+  [entryPoints.websecure]
+    address = ":443"
+
+[certificatesResolvers.leresolver.acme]
+  email = "dev@pokestudio.it"
+  storage = "/etc/traefik/acme.json"
+
+  [certificatesResolvers.leresolver.acme.httpChallenge]
+    # used during the challenge
+    entryPoint = "web"

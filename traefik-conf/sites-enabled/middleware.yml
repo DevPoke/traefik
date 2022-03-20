@@ -1,0 +1,16 @@
+http:
+  middlewares:
+    no-www-redirect:
+      redirectregex:
+        regex: "^https?://(?:www.)(.*)"
+        replacement: "https://${1}"
+
+    no-www-redirect-http:
+      redirectregex:
+        regex: "^https?://(?:www.)(.*)"
+        replacement: "http://${1}"
+
+    compress-no-stream:
+      compress:
+        excludedContentTypes:
+          - text/event-stream
