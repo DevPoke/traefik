@@ -10,8 +10,8 @@ services:
     networks:
       - web
     volumes:
-      - traefik-logs:/logs # <== Volume for logs
-      - traefik-conf:/etc/traefik # <== Volume for certs (TLS)
+      - ./logs/:/logs # <== Volume for logs
+      - ./conf/:/etc/traefik # <== Volume for certs (TLS)
       - /var/run/docker.sock:/var/run/docker.sock:ro # <== Volume for docker admin
     labels:
       #### Labels define the behavior and rules of the traefik proxy for this container ####
