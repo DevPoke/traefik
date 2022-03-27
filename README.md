@@ -91,6 +91,16 @@ docker-compose up -d
 
 ## 2) Docker swarm
 
+Crea alcuni alias `docker-stack` per mantenere la compatibilità con docker-compose.
+
 ```shell
-docker stack deploy -c docker-compose.yml <name-of-your-swarm>
+alias docker-stack='env $(cat .env | grep ^[A-Z] | xargs) docker stack'
+# Per deploy generici
+alias docker-stack-deploy='docker-stack deploy --compose-file docker-compose.yml ${PWD##*/}'
+```
+
+Lancia Traefik
+
+```shell
+docker-stack-deploy
 ```
