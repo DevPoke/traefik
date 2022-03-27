@@ -1,41 +1,71 @@
 version: "3.7"
 services:
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy:latest
+    environment:
+      NETWORKS: 1
+      SERVICES: 1
+      TASKS: 1
+    volumes:
+      # Access to Docker socket
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - socket-prox
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role: manager
+      labels:
+        # Never expose this container's port to a public network.
+        # Only to a Docker networks where only reside the proxy itself and the service that uses it.
+        traefik.enable: false
+
   traefik:
     container_name: traefik
     image: traefik:v2.6.1
-    restart: always
     ports:
       - 80:80
       - 443:443
     networks:
+      - socket-prox
       - web
     volumes:
       - ./logs/:/logs # <== Volume for logs
-      - ./conf/:/etc/traefik # <== Volume for certs (TLS)
-      - /var/run/docker.sock:/var/run/docker.sock:ro # <== Volume for docker admin
-    labels:
-      #### Labels define the behavior and rules of the traefik proxy for this container ####
-      traefik.http.routers.http-catchall.rule: hostregexp(`{host:.+}`)
-      traefik.http.routers.http-catchall.entrypoints: web
-      traefik.http.routers.http-catchall.middlewares: redirect-to-https
+      - ./conf/:/etc/traefik # <== Volume for certs (TLS) and conf
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role: manager
+      labels:
+        #### Labels define the behavior and rules of the traefik proxy for this container ####
+        traefik.http.routers.http-catchall.rule: hostregexp(`{host:.+}`)
+        traefik.http.routers.http-catchall.entrypoints: web
+        traefik.http.routers.http-catchall.middlewares: redirect-to-https
 
-      traefik.http.middlewares.security.headers.framedeny: true
-      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
-      traefik.http.middlewares.no-www-redirectregex.redirectregex.regex: ^https?://(?:www.)(.*)
-      traefik.http.middlewares.no-www-redirectregex.redirectregex.replacement: https://$${1}
+        traefik.http.middlewares.security.headers.framedeny: true
+        traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+        traefik.http.middlewares.no-www-redirectregex.redirectregex.regex: ^https?://(?:www.)(.*)
+        traefik.http.middlewares.no-www-redirectregex.redirectregex.replacement: https://$${1}
 
-      # Traefik monitor
-      traefik.enable: ${TRAEFIK_ENABLE_UI}
-      traefik.http.routers.traefik.rule: Host(`${TRAEFIK_HOST}`)
-      traefik.http.routers.api.entrypoints: websecure
-      traefik.http.routers.traefik.service: api@internal
-      traefik.http.routers.traefik.tls.certresolver: leresolver
-      traefik.http.routers.traefik.middlewares: auth
-      # generate using: htpasswd -cbB traefik-conf/.htpasswd-users <username> <password>
-      traefik.http.middlewares.auth.basicauth.usersfile: /etc/traefik/.htpasswd-users
-      traefik.http.services.traefik.loadbalancer.server.port: 8080
+        # Traefik monitor
+        traefik.enable: ${TRAEFIK_ENABLE_UI}
+        traefik.http.routers.traefik.rule: Host(`${TRAEFIK_HOST}`)
+        traefik.http.routers.api.entrypoints: websecure
+        traefik.http.routers.traefik.service: api@internal
+        traefik.http.routers.traefik.tls.certresolver: leresolver
+        traefik.http.routers.traefik.middlewares: auth
+        # generate using: htpasswd -cbB traefik-conf/.htpasswd-users <username> <password>
+        traefik.http.middlewares.auth.basicauth.usersfile: /etc/traefik/.htpasswd-users
+        traefik.http.services.traefik.loadbalancer.server.port: 8080
 
 networks:
   web:
     name: web
+    external: true
+  socket-proxy:
+    name: socket-proxy
     external: true
