@@ -6,7 +6,7 @@
   [providers.docker]
     exposedByDefault = false
     network = "socket-proxy"
-    endpoint = "tcp://dockerproxy:2375"
+    endpoint = "tcp://socket-proxy:2375"
     # Swarm conf
     swarmMode = true
     swarmModeRefreshSeconds = 15  # default

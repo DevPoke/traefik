@@ -10,17 +10,17 @@ services:
       # Access to Docker socket
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      - socket-prox
+      - socket-proxy
     deploy:
       restart_policy:
         condition: on-failure
       placement:
         constraints:
-          - node.role: manager
+          - node.role==manager
       labels:
         # Never expose this container's port to a public network.
         # Only to a Docker networks where only reside the proxy itself and the service that uses it.
-        traefik.enable: false
+        - traefik.enable=false
 
   traefik:
     container_name: traefik
@@ -29,7 +29,7 @@ services:
       - 80:80
       - 443:443
     networks:
-      - socket-prox
+      - socket-proxy
       - web
     volumes:
       - ./logs/:/logs # <== Volume for logs
@@ -39,14 +39,15 @@ services:
         condition: on-failure
       placement:
         constraints:
-          - node.role: manager
+          - node.role==manager
       labels:
         #### Labels define the behavior and rules of the traefik proxy for this container ####
         traefik.http.routers.http-catchall.rule: hostregexp(`{host:.+}`)
         traefik.http.routers.http-catchall.entrypoints: web
         traefik.http.routers.http-catchall.middlewares: redirect-to-https
 
-        traefik.http.middlewares.security.headers.framedeny: true
+        # FixMe
+        # traefik.http.middlewares.security.headers.framedeny: true
         traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
         traefik.http.middlewares.no-www-redirectregex.redirectregex.regex: ^https?://(?:www.)(.*)
         traefik.http.middlewares.no-www-redirectregex.redirectregex.replacement: https://$${1}
