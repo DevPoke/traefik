@@ -23,7 +23,7 @@ services:
         - traefik.enable=false
 
   traefik:
-    image: traefik:v2.6.3
+    image: traefik:v2.6
     ports:
       - 80:80
       - 443:443
