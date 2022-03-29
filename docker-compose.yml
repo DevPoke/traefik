@@ -23,7 +23,6 @@ services:
         - traefik.enable=false
 
   traefik:
-    container_name: traefik
     image: traefik:v2.6.1
     ports:
       - 80:80
