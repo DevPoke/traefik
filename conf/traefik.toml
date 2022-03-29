@@ -5,7 +5,7 @@
 
   [providers.docker]
     exposedByDefault = false
-    network = "socket-proxy"
+    network = "web"
     endpoint = "tcp://socket-proxy:2375"
     # Swarm conf
     swarmMode = true

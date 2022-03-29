@@ -28,8 +28,8 @@ services:
       - 80:80
       - 443:443
     networks:
-      - socket-proxy
       - web
+      - socket-proxy
     volumes:
       - ./logs/:/logs # <== Volume for logs
       - ./conf/:/etc/traefik # <== Volume for certs (TLS) and conf
