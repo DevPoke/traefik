@@ -56,7 +56,7 @@ docker network create --driver overlay --scope swarm --opt encrypted --attachabl
 
 Salta questo step se il deploy è single-node.
 
-TODO valutare quando sarà necessario il deploy muti-node
+TODO valutare quando sarà necessario il deploy multi-node
 
 Crea una label del nodo per essere sicuri che `Traefik` sarà deployato sullo stesso nodo che ha il volume per i 
 certificati SSL.
