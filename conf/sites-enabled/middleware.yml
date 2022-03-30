@@ -1,5 +1,14 @@
 http:
   middlewares:
+    security:
+      headers:
+        frameDeny: true
+
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
     no-www-redirect:
       redirectregex:
         regex: "^https?://(?:www.)(.*)"

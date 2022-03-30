@@ -45,12 +45,6 @@ services:
         traefik.http.routers.http-catchall.entrypoints: web
         traefik.http.routers.http-catchall.middlewares: redirect-to-https
 
-        # FixMe
-        # traefik.http.middlewares.security.headers.framedeny: true
-        traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
-        traefik.http.middlewares.no-www-redirectregex.redirectregex.regex: ^https?://(?:www.)(.*)
-        traefik.http.middlewares.no-www-redirectregex.redirectregex.replacement: https://$${1}
-
         # Traefik monitor
         traefik.enable: ${TRAEFIK_ENABLE_UI}
         traefik.http.routers.traefik.rule: Host(`${TRAEFIK_HOST}`)
