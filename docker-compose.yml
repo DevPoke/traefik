@@ -43,7 +43,7 @@ services:
         #### Labels define the behavior and rules of the traefik proxy for this container ####
         traefik.http.routers.http-catchall.rule: hostregexp(`{host:.+}`)
         traefik.http.routers.http-catchall.entrypoints: web
-        traefik.http.routers.http-catchall.middlewares: redirect-to-https
+        traefik.http.routers.http-catchall.middlewares: redirect-to-https@file
 
         # Traefik monitor
         traefik.enable: ${TRAEFIK_ENABLE_UI}
