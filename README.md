@@ -1,9 +1,5 @@
 # Traefik
 
-Utilizzato per seguenti funzionalità:
-- reverse proxy
-- https
-
 # Quick start
 
 ```shell
@@ -17,27 +13,22 @@ cp .env.example .env
 htpasswd -cbB traefik-conf/.htpasswd-users <username> <password>
 ```
 
-## Configurazione
+## Configuration
 
-Configurare le seguenti variabili d'ambiente
+Configure the following environment variables:
 
-- TRAEFIK_HOST
-- TRAEFIK_ENABLE_UI
-
-Default:
 ```bash
 TRAEFIK_HOST=monitor.pokestudio.it
 TRAEFIK_ENABLE_UI=true
 ```
 
-## Docker Swarm e sicurezza.
+## Docker Swarm and security.
 
-### Crea le reti
+### Create networks
 
-Crea la rete `socket-proxy` che sarà utilizzata per le comunicazioni fra traefik e docker tramite il servizio 
-`docker-proxy`.
+Create the `socket-proxy` network which will be used for communications between traefik and docker via the` docker-proxy` service.
 
-Questa è una pratica di sicurezza. Per maggiori informazioni visita:
+This is a security practice. For more information visit:
 - [rockyourcode](https://www.rockyourcode.com/traefik-2-docker-swarm-setup-with-docker-socket-proxy-and-more/)
 - [doc.traefik](https://doc.traefik.io/traefik/providers/docker/#docker-api-access)
 
@@ -45,28 +36,24 @@ Questa è una pratica di sicurezza. Per maggiori informazioni visita:
 docker network create --driver overlay --scope swarm --opt encrypted --attachable socket-proxy
 ```
 
-Crea la rete `web` necessaria per permettere la comunicazione fra traefik e i containers che dovranno essere esposti 
-nel web.
+Create the `web` network necessary to allow communication between traefik and the containers to be exposed on the web.
 
 ```shell
 docker network create --driver overlay --scope swarm --opt encrypted --attachable web
 ```
 
-### Extra configurazioni multi-node
+### Multi-node configuration
 
-Salta questo step se il deploy è single-node.
+TODO: TestMe
 
-TODO valutare quando sarà necessario il deploy multi-node
-
-Crea una label del nodo per essere sicuri che `Traefik` sarà deployato sullo stesso nodo che ha il volume per i 
-certificati SSL.
+Create a node label to ensure that `Traefik` is deployed on the same node that has the volume for SSL certificates.
 
 ```shell
 export NODE_ID=$(docker info -f '{{.Swarm.NodeID}}')
 docker node update --label-add web.traefik-certificates=true $NODE_ID
 ```
 
-Aggiungi anche la seguente label nel file docker-compose di traefik:
+Also add the following label in the docker-compose file of traefik:
 
 ```shell
 services:
@@ -78,9 +65,6 @@ services:
           - node.labels.traefik.traefik-public-certificates: true
 ```
 
-### Add Node Labels And Environment Variables
-
-
 # Deploy
 
 ## 1) Docker compose
@@ -91,15 +75,12 @@ docker-compose up -d
 
 ## 2) Docker swarm
 
-Crea alcuni alias `docker-stack` per mantenere la compatibilità con docker-compose.
+Create aliases docker-stack to maintain compatibility with docker-compose.
 
 ```shell
 alias docker-stack='env $(cat .env | grep ^[A-Z] | xargs) docker stack'
-# Per deploy generici
 alias docker-stack-deploy='docker-stack deploy --compose-file docker-compose.yml ${PWD##*/}'
 ```
-
-Lancia Traefik
 
 ```shell
 docker-stack-deploy
